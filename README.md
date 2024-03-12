@@ -5,8 +5,8 @@ definition language already. And it's pretty good.
 
 ### TODO
 
-- [] implement manySep, or add separator as optional param for `many` func
-- []
+-[] implement manySep, or add separator as optional param for `many` func
+-[]
 
 ### philosophy
 
