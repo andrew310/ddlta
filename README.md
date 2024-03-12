@@ -3,6 +3,11 @@
 <b>[del-tuh]</b> A utility to prevent you from building models. SQL has a data
 definition language already. And it's pretty good.
 
+### TODO
+
+- [] implement manySep, or add separator as optional param for `many` func
+- []
+
 ### philosophy
 
 Ddlta uses its own parser build using functional programming principles.
