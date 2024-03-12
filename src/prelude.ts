@@ -111,10 +111,16 @@ export const alt = <T>(...fns: ConsumeFn<T>[]) => (state: State) =>
         ),
       );
 
-      if (Option.isSome(result)) return result.value;
+      if (Option.isSome(result)) return result;
     }
-    throw new Error("No alternative matched");
-  });
+    return Option.none<State>();
+  }).pipe(
+    Effect.map(Option.match({
+      onSome: (x) => Effect.succeed(x),
+      onNone: () => Effect.fail(new Error("No matching token")),
+    })),
+    Effect.flatten,
+  );
 
 /**
  * Maybe consume a token

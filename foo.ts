@@ -25,12 +25,37 @@ export { CreateTable, Table };
  * Scratch
  * -----------------------------------------------------------------------------------------------*/
 
-const tokens = Chunk.fromIterable(ddl.split(/\s+/));
-const state = P.State([tokens, []]);
+// const tokens = Chunk.fromIterable(ddl.split(/\s+/));
+const tokens = [
+  "create",
+  "table",
+  "foo.bar",
+  "(",
+  "id",
+  "serial",
+  "primary",
+  "key",
+  "not",
+  "null",
+  ",",
+  "name",
+  "text",
+  "not",
+  "null",
+  "done",
+  "boolean",
+  "completedAt",
+  "timestamp",
+  ")",
+];
+const state = P.State([Chunk.fromIterable(tokens), []]);
 
 const result = Effect.runSync(
   CreateTable(state).pipe(
     Effect.flatMap(Table),
+    Effect.flatMap(P.consume(T.OpenParen)),
+    Effect.flatMap(ColumnName),
+    Effect.flatMap(P.consume(T.DataType)),
   ),
 );
 
