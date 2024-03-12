@@ -196,3 +196,7 @@ export const ColumnDef = rule(
   consume(Tokens.Identifier),
   consume(Tokens.DataType),
 );
+
+const ColumnName = consume(Tokens.Identifier)
+
+export const Column = rule(ColumnName, consume(Tokens.DataType), many(Constraint))
