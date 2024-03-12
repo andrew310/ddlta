@@ -102,7 +102,7 @@ test("opt", () => {
 });
 
 test("many", () => {
-  const tokens = ["foo", "bar", "baz"];
+  const tokens = ["foo", "bar", "baz", "1"];
 
   const state = P.State([Chunk.fromIterable(tokens), []]);
 
