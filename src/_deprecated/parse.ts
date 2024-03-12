@@ -14,30 +14,34 @@ export class CreateTableParser extends CstParser {
     this.CONSUME(tokens.CreateTable);
     this.SUBRULE(this.table);
     this.CONSUME(tokens.Lparen);
+    this.SUBRULE(this.columns);
+    this.CONSUME(tokens.Rparen);
+    this.OPTION(() => this.CONSUME(tokens.SemiColon));
+  });
+
+  public columns = this.RULE("columns", () => {
     this.AT_LEAST_ONE_SEP({
       SEP: tokens.Comma,
       DEF: () => {
         this.SUBRULE(this.columnDefinition);
       },
     });
-    this.CONSUME(tokens.Rparen);
-    this.OPTION(() => this.CONSUME(tokens.SemiColon));
   });
 
   public columnDefinition = this.RULE("columnDefinition", () => {
     this.CONSUME(tokens.Identifier, { LABEL: "columnName" });
     this.CONSUME(tokens.ColumnType);
     this.MANY(() => {
-      this.OR([
-        { ALT: () => this.SUBRULE(this.constraint) },
-        { ALT: () => this.SUBRULE(this.default) },
-        { ALT: () => this.SUBRULE(this.references) },
-      ]);
+      this.SUBRULE(this.constraint, { LABEL: "ColumnConstraints" });
     });
   });
 
   public constraint = this.RULE("constraint", () => {
-    this.CONSUME(tokens.Constraint);
+    this.OR([
+      { ALT: () => this.CONSUME(tokens.Constraint) },
+      { ALT: () => this.SUBRULE(this.default, { LABEL: "ColumnDefault" }) },
+      { ALT: () => this.SUBRULE(this.references, { LABEL: "ForeignKey" }) },
+    ]);
   });
 
   public default = this.RULE("default", () => {

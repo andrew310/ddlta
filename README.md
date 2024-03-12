@@ -1,7 +1,18 @@
 # DDL + ∆ = Ddlta
 
 <b>[del-tuh]</b> A utility to prevent you from building models. SQL has a data
-definition language already. Let's use it.
+definition language already. And it's pretty good.
+
+### philosophy
+
+Ddlta uses its own parser build using functional programming principles.
+
+- Pipelines over chaining
+- Immutable data
+
+To achieve this, the Effect library is being used. It is a wondeful library, and
+I encourage you to check it out if you are interested in the benefits of
+functional programming in Typescript.
 
 ### Install
 
@@ -11,7 +22,7 @@ npm install ddlta
 
 ### Getting started
 
-Put your DDL into a file:
+Write some SQL data definitions and save them to a file:
 
 ```sql
 // ddl/tasks.sql

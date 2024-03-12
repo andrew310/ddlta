@@ -1,166 +1,111 @@
-import { createToken, Lexer, type TokenType } from "chevrotain";
+import { Schema } from "@effect/schema";
 
-const Identifier = createToken({ name: "Identifier", pattern: /[a-zA-Z]\w*/ });
-const Lparen = createToken({ name: "Lparen", pattern: /\(/ });
-const Rparen = createToken({ name: "Rparen", pattern: /\)/ });
-const Comma = createToken({ name: "Comma", pattern: /,/ });
+/* -------------------------------------------------------------------------------------------------
+ * Node
+ * -----------------------------------------------------------------------------------------------*/
 
-const Function = createToken({
-  name: "Function",
-  pattern: Lexer.NA,
-});
+export interface Node {
+  readonly _kind: string;
+  readonly value: string | ReadonlyArray<Node>;
+}
 
-const Now = createToken({
-  name: "Now",
-  pattern: /NOW/i,
-  categories: Function,
-});
+export const Node: Schema.Schema<Node> = Schema.struct({
+  _kind: Schema.string,
+  value: Schema.union(Schema.string, Schema.array(Schema.suspend(() => Node))),
+}).pipe(Schema.identifier("Node"));
 
-const UuidGenerateV4 = createToken({
-  name: "UuidGenerateV4",
-  pattern: /UUID_GENERATE_V4/i,
-  categories: Function,
-});
+/* -------------------------------------------------------------------------------------------------
+ * Tokens
+ * -----------------------------------------------------------------------------------------------*/
 
-const Constraint = createToken({
-  name: "Constraint",
-  pattern: Lexer.NA,
-});
+export const createToken = (pattern: RegExp, kind: string) =>
+  Schema.string.pipe(Schema.pattern(pattern)).pipe(
+    Schema.transform(
+      Node,
+      (image: string) => ({ _kind: kind, value: image }),
+      (node: Node) => node.value + "",
+    ),
+  );
 
-const Null = createToken({
-  name: "Null",
-  pattern: /NULL/i,
-  categories: Constraint,
-});
+const Dot = createToken(/\./, "Dot");
+const Comma = createToken(/,/, "Comma");
+const OpenParen = createToken(/\(/, "OpenParen");
+const CloseParen = createToken(/\)/, "CloseParen");
+const Identifier = createToken(/^[a-zA-Z]\w*/, "Identifier");
+const SemiColon = createToken(/;/, "SemiColon");
 
-const NotNull = createToken({
-  name: "NotNull",
-  pattern: /NOT NULL/i,
-  categories: Constraint,
-});
+const SingleQuotedValue = Schema.string.pipe(
+  Schema.pattern(/'[^']*'/),
+  Schema.transform(
+    Node,
+    (image: string) => ({
+      _kind: "SingleQuotedValue",
+      value: image.slice(1, -1),
+    }),
+    (node: Node) => node.value + "",
+  ),
+);
 
-const PrimaryKey = createToken({
-  name: "PrimaryKey",
-  pattern: /PRIMARY KEY/i,
-  categories: Constraint,
-});
+const NumberValue = Schema.NumberFromString;
 
-// constraint keywords that require a subrule
-const Default = createToken({
-  name: "Default",
-  pattern: /DEFAULT/i,
-});
+const Uuid = Schema.string.pipe(Schema.pattern(/uuid/i));
+const Serial = Schema.string.pipe(Schema.pattern(/serial/i));
+const Int = Schema.string.pipe(Schema.pattern(/integer|int/i));
+const Bigint = Schema.string.pipe(Schema.pattern(/bigint/i));
+const Text = Schema.string.pipe(Schema.pattern(/text/i));
+const Date = Schema.string.pipe(Schema.pattern(/date/i));
+const Bool = Schema.string.pipe(Schema.pattern(/boolean/i));
+const Timestamp = Schema.string.pipe(Schema.pattern(/timestamp/i));
 
-const References = createToken({
-  name: "References",
-  pattern: /REFERENCES/i,
-});
+const DataTypeSchema = Schema.union(
+  Uuid,
+  Serial,
+  Int,
+  Bigint,
+  Text,
+  Date,
+  Bool,
+  Timestamp,
+);
 
-const ColumnType = createToken({
-  name: "ColumnType",
-  pattern: Lexer.NA,
-});
-
-const Serial = createToken({
-  name: "Serial",
-  pattern: /SERIAL/i,
-  categories: ColumnType,
-});
-
-const Int = createToken({
-  name: "Int",
-  pattern: /INTEGER|INT/i,
-  categories: ColumnType,
-});
+const DataType = DataTypeSchema.pipe(
+  Schema.transform(
+    Node,
+    (image: string) => ({ _kind: "DataType", value: image }),
+    (node: Node) => node.value + "",
+  ),
+);
 
 /**
- * @note sometimes unique can take parameters
- * @todo: move this to a subrule
+ * Keywords
  */
-const Unique = createToken({
-  name: "Unique",
-  pattern: /UNIQUE/i,
-  categories: ColumnType,
-});
-
-const Bigint = createToken({
-  name: "Bigint",
-  pattern: /BIGINT/i,
-  categories: ColumnType,
-});
-
-const Date = createToken({
-  name: "Date",
-  pattern: /DATE/i,
-  categories: ColumnType,
-});
-
-const Timestamp = createToken({
-  name: "Timestamp",
-  pattern: /TIMESTAMP/i,
-  categories: ColumnType,
-});
-
-const Boolean = createToken({
-  name: "Boolean",
-  pattern: /BOOLEAN/i,
-  categories: ColumnType,
-});
-
-const Uuid = createToken({
-  name: "Uuid",
-  pattern: /UUID/i,
-  categories: ColumnType,
-});
-
-const Text = createToken({
-  name: "Text",
-  pattern: /TEXT/i,
-  categories: ColumnType,
-});
-
-const Dot = createToken({
-  name: "Dot",
-  pattern: /\./,
-});
-
-const CreateTable = createToken({
-  name: "CreateTable",
-  pattern: /CREATE TABLE/i,
-});
-const WhiteSpace = createToken({
-  name: "WhiteSpace",
-  pattern: /\s+/,
-  group: Lexer.SKIPPED,
-});
-const SemiColon = createToken({ name: "SemiColon", pattern: /;/ });
+const Create = createToken(/Create/i, "Create");
+const Default = createToken(/Default/i, "Default");
+const Key = createToken(/Key/i, "Key");
+const Not = createToken(/Not/i, "Not");
+const Null = createToken(/Null/i, "Null");
+const Primary = createToken(/Primary/i, "Primary");
+const References = createToken(/References/i, "References");
+const Table = createToken(/Table/i, "Table");
+const Unique = createToken(/Unique/i, "Unique");
 
 export {
-  Bigint,
-  Boolean,
-  ColumnType,
+  CloseParen,
   Comma,
-  Constraint,
-  CreateTable,
-  Date,
+  Create,
+  DataType,
   Default,
   Dot,
-  Function,
   Identifier,
-  Int,
-  Lparen,
-  NotNull,
-  Now,
+  Key,
+  Not,
   Null,
-  PrimaryKey,
+  NumberValue,
+  OpenParen,
+  Primary,
   References,
-  Rparen,
   SemiColon,
-  Serial,
-  Text,
-  Timestamp,
+  SingleQuotedValue,
+  Table,
   Unique,
-  Uuid,
-  UuidGenerateV4,
-  WhiteSpace,
 };

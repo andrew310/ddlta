@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { CreateTableLexer } from "../src/lex";
+import { CreateTableLexer } from "../src/_deprecated/lex";
 
 test("lex", () => {
   const ddl =

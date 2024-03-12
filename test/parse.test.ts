@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 
-import { CreateTableLexer } from "../src/lex";
-import { CreateTableParser } from "../src/parse";
+import { CreateTableLexer } from "../src/_deprecated/lex";
+import { CreateTableParser } from "../src/_deprecated/parse";
 
 const ddl = `create table public.task
 (
@@ -39,7 +39,9 @@ test("parse", () => {
 
   expect(
     // @ts-expect-error
-    cst.children.columnDefinitions.map((x) => x.children.Identifier[0].image),
+    cst.children.columns[0].children.columnDefinition.map((x) =>
+      x.children.columnName[0].image
+    ),
   )
     .toStrictEqual([
       "id",

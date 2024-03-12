@@ -1,5 +1,5 @@
 {
-  "name": "ddlta",
+  "name": "ddlx",
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
@@ -9,6 +9,9 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "chevrotain": "^11.0.3"
+    "@effect/schema": "^0.63.2",
+    "chevrotain": "^11.0.3",
+    "effect": "^2.4.0",
+    "postgres": "^3.4.3"
   }
 }
