@@ -58,27 +58,24 @@ test("column default -- number", () => {
   ]);
 });
 
-
-test("Column", () => {
-
-
-  const tokens = ["foo", "int", "not", "null", "unique"]
-  const state = P.State([Chunk.fromIterable(tokens), []])
-  const result = Effect.runSync(P.Column(state))
+test("Column -- int not null unique", () => {
+  const tokens = ["foo", "int", "not", "null", "unique"];
+  const state = P.State([Chunk.fromIterable(tokens), []]);
+  const result = Effect.runSync(P.Column(state));
 
   expect(result[1]).toEqual([{
-    _kind: "rule",
+    _kind: "Column",
     value: [
       { _kind: "Identifier", value: "foo" },
       { _kind: "DataType", value: "int" },
       {
-        _kind: "NotNull", value: [
+        _kind: "NotNull",
+        value: [
           { _kind: "Not", value: "not" },
-          { _kind: "Null", value: "null" }
-        ]
+          { _kind: "Null", value: "null" },
+        ],
       },
       { _kind: "Unique", value: "unique" },
-    ]
-  }])
-
-})
+    ],
+  }]);
+});

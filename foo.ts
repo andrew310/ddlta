@@ -1,4 +1,4 @@
-import { Chunk, Effect } from "effect";
+import { Chunk, Effect, pipe } from "effect";
 
 import * as P from "./src/prelude";
 import * as T from "./src/tokens";
@@ -50,12 +50,17 @@ const tokens = [
 ];
 const state = P.State([Chunk.fromIterable(tokens), []]);
 
+const Column = P.rule(ColumnName, P.consume(T.DataType), P.many(P.Constraint), {
+  _kind: "Column",
+});
+
+const Columns = P.many(Column);
+
 const result = Effect.runSync(
   CreateTable(state).pipe(
     Effect.flatMap(Table),
     Effect.flatMap(P.consume(T.OpenParen)),
-    Effect.flatMap(ColumnName),
-    Effect.flatMap(P.consume(T.DataType)),
+    Effect.flatMap(Columns),
   ),
 );
 
