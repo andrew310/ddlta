@@ -1,12 +1,11 @@
-# DDL + ∆ = Ddlta
+  # ddl (∆)
 
 <b>[del-tuh]</b> A utility to prevent you from building models. SQL has a data
 definition language already. And it's pretty good.
 
 ### TODO
 
--[] implement manySep, or add separator as optional param for `many` func
--[]
+-[] implement manySep, or add separator as optional param for `many` func -[]
 
 ### philosophy
 

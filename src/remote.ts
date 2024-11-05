@@ -1,8 +1,19 @@
 import postgres from "postgres";
 import { Column } from "./data";
-
+// POSTGRES_HOST='quanta-dev-cluster.cluster-ci5581xqvs2b.us-west-2.rds.amazonaws.com'
+// # POSTGRES_HOST='q-staging-cluster.cluster-ci5581xqvs2b.us-west-2.rds.amazonaws.com'
+// POSTGRES_USERNAME='qadmin'
+// POSTGRES_PASSWORD='OxiFy&Dc29P1'
+// POSTGRES_DATABASE='production'
+// POSTGRES_PORT=5432
 export async function loadRemoteData() {
-  const sql = postgres();
+  const sql = postgres({
+    host: "q-staging-cluster.cluster-ci5581xqvs2b.us-west-2.rds.amazonaws.com",
+    port: 5432,
+    database: "production",
+    username: "qadmin",
+    password: "OxiFy&Dc29P1",
+  });
   const rows = await sql<Column[]>`
     SELECT
         "table_schema" as "tableSchema",
